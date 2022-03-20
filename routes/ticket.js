@@ -75,8 +75,6 @@ router.put("/:ticketId", replyTicketReqValidation, verifyToken, async(req, res) 
             { new: true }
         )
 
-        console.log(updateTicket);
-
         res.status(200).send("Ticket has been updated");
 
 
