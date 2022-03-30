@@ -80,12 +80,20 @@ router.post("/reset-password", resetPassReqEmailValidation, async(req, res) => {
             await mailOption({ email:user.email, pin:newResetPin.pin, type:"request-new-password" });
     
     
-            return res.status(200).send(`Check your ${user.email} inbox for the password reset pin. If you don't receive an email, and it's not in your spam folder this could mean you signed up with a different address..`);
+            return 	res.json({
+                status: "success",
+                message:
+                `Check your registerd email inbox for the password reset pin. If you don't receive an email, and it's not in your spam folder this could mean you signed up with a different address..`
+            });
     
         }
     
-        return res.status(200).send(`Check your ${req.body.email} inbox for the password reset pin. If you don't receive an email, and it's not in your spam folder this could mean you signed up with a different address..`);
-    } 
+        return 	res.json({
+            status: "success",
+            message:
+            `Check your registerd email inbox for the password reset pin. If you don't receive an email, and it's not in your spam folder this could mean you signed up with a different address..`
+        });
+    }
     catch(error) {
         console.log(error)
         res.status(500).send(err0r);
@@ -112,7 +120,7 @@ router.patch("/reset-password", updatePasswordReqValidation, async(req, res) => 
             const today = new Date();
     
             if (today > expDate) {
-                return res.status(401).send("Invalid or expired pin.");
+                return res.json({ status: "error", message: "Invalid or expired pin." });
             }
     
             const password = CryptoJS.AES.encrypt(req.body.password, process.env.SECRET_PASS).toString();
@@ -127,13 +135,19 @@ router.patch("/reset-password", updatePasswordReqValidation, async(req, res) => 
 
                 await ResetPin.findOneAndDelete({email: req.body.email}, {pin: req.body.pin});
 
-                return res.status(200).send("Your password has been updated successfully");
+                return res.json({
+                    status: "success",
+                    message: "Your password has been updated",
+                });
     
             }
     
         }
 
-        return res.status(403).send("Your password is not updated. Please try again later");
+        return res.json({
+            status: "error",
+            message: "Unable to update your password. plz try again later",
+        });
 
     } catch(err){
         res.status(599).send(err);
